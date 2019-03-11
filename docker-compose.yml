@@ -17,21 +17,15 @@ services:
     networks:
       - elk
 
-  logstash:
-    build:
-      context: logstash/
-      args:
-        ELK_VERSION: $ELK_VERSION
+  fluentd:
+    build: ./fluentd
     volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
     ports:
-      - "5000:5000"
-      - "9600:9600"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
+      - "24224:24224"
+      - "24224:24224/udp"
     depends_on:
       - elasticsearch
 
